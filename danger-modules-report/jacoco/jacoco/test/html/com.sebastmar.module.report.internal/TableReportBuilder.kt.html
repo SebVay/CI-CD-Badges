@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TableReportBuilder.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">danger-modules-report</a> &gt; <a href="index.source.html" class="el_package">com.sebastmar.module.report.internal</a> &gt; <span class="el_source">TableReportBuilder.kt</span></div><h1>TableReportBuilder.kt</h1><pre class="source lang-java linenums">package com.sebastmar.module.report.internal
+
+import com.sebastmar.module.report.internal.domain.GetPullRequest
+
+/**
+ * Abstract base class for building table-based reports.
+ * This class provides common functionality for generating reports that are primarily
+ * structured as HTML tables.
+ *
+ * It is designed to be subclassed by specific report writers that need to present
+ * data in a tabular format (e.g., GithubReportWriter).
+ * Common table-building logic may be extracted to this class in the future.
+ */
+<span class="fc" id="L14">internal abstract class TableReportBuilder(</span>
+    getPullRequest: GetPullRequest,
+<span class="fc" id="L16">) : ReportBuilder&lt;String&gt;(getPullRequest) {</span>
+
+    /**
+     * Writes the top section of the report if it exists.
+     * If the top section in reportConfig is null or empty, nothing will be written.
+     */
+    abstract fun topSection()
+
+    /**
+     * Writes the bottom section of the report if it exists.
+     * If the bottom section in reportConfig is null or empty, nothing will be written.
+     */
+    abstract fun bottomSection()
+
+    /**
+     * Writes an HTML table to the report.
+     * The table content is provided by the `block` lambda.
+     *
+     * @param block A lambda function that defines the content of the table.
+     *              This lambda should append HTML table rows (`&lt;tr&gt;`) and cells (`&lt;td&gt;`, `&lt;th&gt;`)
+     *              to the current output stream.
+     */
+    abstract fun table(block: () -&gt; Unit)
+
+    /**
+     * Writes the header row for the report table.
+     * The header row includes columns for file status (e.g., Added, Modified, Deleted)
+     * and the corresponding line changes.
+     */
+    abstract fun headerRow()
+
+    /**
+     * Writes the table rows for each module, displaying the number of added, modified, and deleted lines.
+     */
+    abstract fun moduleRows()
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntryPoint.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">danger-modules-report</a> &gt; <a href="index.source.html" class="el_package">com.sebastmar.module.report</a> &gt; <span class="el_source">EntryPoint.kt</span></div><h1>EntryPoint.kt</h1><pre class="source lang-java linenums">package com.sebastmar.module.report
+
+import com.sebastmar.module.report.configuration.ConfigurationBuilder
+import com.sebastmar.module.report.internal.Configuration
+import com.sebastmar.module.report.internal.di.koin.getReport
+import com.sebastmar.module.report.internal.host.HostType
+import systems.danger.kotlin.models.danger.DangerDSL
+
+internal typealias BuilderBlock = (ConfigurationBuilder.() -&gt; Unit)
+
+/**
+ * Generates a GitHub comment with a report of the modules that have been modified in a pull request.
+ *
+ * @receiver The [DangerDSL] instance, providing access to Danger's functionalities.
+ * @param builder A lambda with [ConfigurationBuilder] receiver to configure report generation.
+ *             Can be used to customize:
+ *             - Report sections and headers
+ *             - Module naming and filtering rules
+ *             - Comment formatting options
+ * @see ConfigurationBuilder
+ */
+<span class="fc" id="L22">public fun DangerDSL.githubModuleReport(</span>
+<span class="fc" id="L23">    builder: BuilderBlock = {},</span>
+) {
+<span class="fc" id="L25">    getReport(HostType.Github, builder.buildConfiguration())</span>
+<span class="fc" id="L26">        .write()</span>
+<span class="fc" id="L27">}</span>
+
+private fun BuilderBlock.buildConfiguration(): Configuration {
+<span class="fc" id="L30">    return ConfigurationBuilder()</span>
+<span class="fc" id="L31">        .apply(this)</span>
+<span class="fc" id="L32">        .build()</span>
+}
+
+// public fun githubActionModuleReport() { ... }
+// public fun DangerDSL.gitlabModuleReport() { ... }
+// public fun DangerDSL.bitbucketModuleReport() { ... }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
