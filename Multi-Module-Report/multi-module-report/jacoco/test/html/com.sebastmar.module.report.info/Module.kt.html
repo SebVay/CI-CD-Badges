@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Module.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">multi-module-report</a> &gt; <a href="index.source.html" class="el_package">com.sebastmar.module.report.info</a> &gt; <span class="el_source">Module.kt</span></div><h1>Module.kt</h1><pre class="source lang-java linenums">package com.sebastmar.module.report.info
+
+import com.sebastmar.module.report.info.VersionedFile.Status
+
+/**
+ * Represents a module that has been modified in the current Pull Request.
+ *
+ * This class encapsulates information about a specific module within a project,
+ * detailing the files that have been changed.
+ *
+ * @property name The name of the module.
+ * @property files A list of [VersionedFile] objects representing all modified files in this module.
+ */
+<span class="fc" id="L14">public data class Module(</span>
+<span class="fc" id="L15">    val name: String,</span>
+<span class="fc" id="L16">    val type: ModuleType = ModuleType.STANDARD,</span>
+<span class="pc" id="L17">    val files: List&lt;VersionedFile&gt; = emptyList(),</span>
+<span class="fc" id="L18">) {</span>
+<span class="fc" id="L19">    internal val createdFiles: List&lt;VersionedFile&gt; by lazy {</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        files.filter { it.status == Status.Created }</span>
+    }
+
+<span class="fc" id="L23">    internal val modifiedFiles: List&lt;VersionedFile&gt; by lazy {</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        files.filter { it.status == Status.Modified }</span>
+    }
+
+<span class="fc" id="L27">    internal val deletedFiles: List&lt;VersionedFile&gt; by lazy {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        files.filter { it.status == Status.Deleted }</span>
+    }
+}
+
+/**
+ * Represents the type of a module.
+ *
+ * This enum is used to categorize modules based on their role or structure within a project.
+ *
+ * @property PROJECT_ROOT Indicates that the module is the root of the project.
+ * @property STANDARD Indicates a standard module within the project.
+ * @property NOT_KNOWN Indicates that the type could not be determined.
+ */
+public enum class ModuleType {
+<span class="fc" id="L42">    PROJECT_ROOT,</span>
+<span class="fc" id="L43">    STANDARD,</span>
+<span class="fc" id="L44">    NOT_KNOWN,</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
