@@ -134,11 +134,17 @@ generateDeltaBadge() {
   elif is "$delta" ">" -2; then color=$COLOR_COVERAGE_POOR
   else color=$COLOR_COVERAGE_BAD; fi
 
+  if is "$delta" "==" 0; then
+    delta="no changes"
+  else
+    delta="$delta%"
+  fi
+
   cat <<EOF > "$1/$2"
 {
   "schemaVersion": 1,
   "label": "Δ",
-  "message": "$delta%",
+  "message": "$delta",
   "color": "$color"
 }
 EOF
