@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GetUpdatedModules.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">multi-module-report</a> &gt; <a href="index.source.html" class="el_package">com.sebastmar.module.report.internal.domain</a> &gt; <span class="el_source">GetUpdatedModules.kt</span></div><h1>GetUpdatedModules.kt</h1><pre class="source lang-java linenums">package com.sebastmar.module.report.internal.domain
+
+import com.sebastmar.module.report.configuration.ModulesInterceptor
+import com.sebastmar.module.report.info.Module
+import com.sebastmar.module.report.info.ModuleType
+import com.sebastmar.module.report.info.VersionedFile
+import java.nio.file.Path
+import kotlin.io.path.exists
+import kotlin.io.path.pathString
+import kotlin.io.path.relativeTo
+
+/**
+ * Interface for retrieving a list of modules that have been changed in the current pull request.
+ */
+internal interface GetUpdatedModules {
+    operator fun invoke(): List&lt;Module&gt;
+}
+
+/**
+ * Get the created, modified, and deleted files then groups them into their respective modules.
+ *
+ * It processes the files to identify the modules they belong to.
+ * [ModulesInterceptor] is used to filter or modify the resulting list of modules that'll be displayed by the report.
+ */
+<span class="fc" id="L25">internal class GetUpdatedModulesImpl(</span>
+<span class="fc" id="L26">    private val getAllVersionedFiles: GetAllVersionedFiles,</span>
+<span class="fc" id="L27">    private val getProjectRoot: GetProjectRoot,</span>
+<span class="fc" id="L28">    private val modulesInterceptor: ModulesInterceptor,</span>
+<span class="fc" id="L29">    private val stringProvider: StringProvider,</span>
+) : GetUpdatedModules {
+
+<span class="fc" id="L32">    private val projectRootPath: Path by lazy { getProjectRoot() }</span>
+
+<span class="fc" id="L34">    private val projectRootModule by lazy { Module(stringProvider.projectRootModuleName(), ModuleType.PROJECT_ROOT) }</span>
+
+<span class="fc" id="L36">    private val unknownModule by lazy { Module(stringProvider.unknownModuleName(), ModuleType.NOT_KNOWN) }</span>
+
+    override fun invoke(): List&lt;Module&gt; {
+<span class="fc" id="L39">        return getAllVersionedFiles()</span>
+<span class="fc" id="L40">            .groupBy(::findCorrectModule)</span>
+<span class="fc" id="L41">            .map { (module, files) -&gt; module.copy(files = files) }</span>
+<span class="fc" id="L42">            .let(modulesInterceptor::intercept)</span>
+    }
+
+    /**
+     * Finds the appropriate module for a specified versioned file within the project structure.
+     *
+     * The method traverses the directory hierarchy starting from the file's location,
+     * checking whether each directory is a recognized module (either a root Gradle module or
+     * a standard Gradle module). If a matching module is found, it is returned.
+     *
+     * @param versionedFile The versioned file for which the containing module needs to be identified.
+     * @return The module containing the provided file, or an &quot;unknown module&quot; if no match is found.
+     */
+    private fun findCorrectModule(versionedFile: VersionedFile): Module {
+<span class="fc" id="L56">        val startingPath = projectRootPath.resolve(versionedFile.fullPath).parent</span>
+
+<span class="fc bfc" id="L58" title="All 6 branches covered.">        return generateSequence(startingPath, Path::getParent).firstNotNullOfOrNull { path -&gt;</span>
+<span class="fc" id="L59">            when {</span>
+<span class="fc bfc" id="L60" title="All 4 branches covered.">                path.isRootModule() &amp;&amp; startingPath == path -&gt; projectRootModule</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">                path.isStandardModule() -&gt; Module(name = path.relativeTo(projectRootPath).pathString.replace(&quot;/&quot;, &quot;:&quot;))</span>
+<span class="fc" id="L62">                else -&gt; null</span>
+<span class="fc" id="L63">            }</span>
+<span class="fc" id="L64">        } ?: unknownModule</span>
+    }
+
+    /**
+     * Checks if the current path represents a standard Gradle module.
+     *
+     * A directory is considered a standard module if it contains either a `build.gradle.kts`
+     * or a `build.gradle` file.
+     */
+    private fun Path.isStandardModule(): Boolean {
+<span class="pc bpc" id="L74" title="1 of 4 branches missed.">        return hasBuildGradle() &amp;&amp; !hasSettingsGradle()</span>
+    }
+
+    /**
+     * Checks if the current path represents the root Gradle module.
+     *
+     * A directory is considered the root module if it contains either a `settings.gradle.kts`
+     * or a `settings.gradle` file.
+     */
+    private fun Path.isRootModule(): Boolean {
+<span class="fc" id="L84">        return hasSettingsGradle()</span>
+    }
+
+    private fun Path.hasBuildGradle(): Boolean {
+<span class="fc bfc" id="L88" title="All 4 branches covered.">        return resolve(&quot;build.gradle.kts&quot;).exists() || resolve(&quot;build.gradle&quot;).exists()</span>
+    }
+
+    private fun Path.hasSettingsGradle(): Boolean {
+<span class="fc bfc" id="L92" title="All 4 branches covered.">        return resolve(&quot;settings.gradle.kts&quot;).exists() || resolve(&quot;settings.gradle&quot;).exists()</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

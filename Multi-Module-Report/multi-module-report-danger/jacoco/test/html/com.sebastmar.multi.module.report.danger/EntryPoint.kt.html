@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntryPoint.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">multi-module-report-danger</a> &gt; <a href="index.source.html" class="el_package">com.sebastmar.multi.module.report.danger</a> &gt; <span class="el_source">EntryPoint.kt</span></div><h1>EntryPoint.kt</h1><pre class="source lang-java linenums">package com.sebastmar.multi.module.report.danger
+
+import com.sebastmar.module.report.BuilderBlock
+import com.sebastmar.module.report.configuration.ConfigurationBuilder
+import com.sebastmar.module.report.githubReport
+import com.sebastmar.multi.module.report.danger.internal.DangerCommandLine
+import com.sebastmar.multi.module.report.danger.internal.DangerWrapper
+import com.sebastmar.multi.module.report.danger.internal.DangerWriter
+import systems.danger.kotlin.models.danger.DangerDSL
+
+/**
+ * Generates a GitHub comment with a report of the modules that have been modified in a pull request.
+ *
+ * @receiver The [DangerDSL] instance, providing access to Danger's functionalities.
+ * @param builder A lambda with [ConfigurationBuilder] receiver to configure report generation.
+ *             Can be used to customize:
+ *             - Report sections and headers
+ *             - Module naming and filtering rules
+ *             - Comment formatting options
+ * @see ConfigurationBuilder
+ */
+<span class="nc" id="L22">public fun DangerDSL.githubModuleReport(builder: BuilderBlock = {}) {</span>
+<span class="fc" id="L23">    githubReport(</span>
+<span class="fc" id="L24">        systemCommandLine = DangerCommandLine(this),</span>
+<span class="fc" id="L25">        systemWrapper = DangerWrapper(this),</span>
+<span class="fc" id="L26">        systemWriter = DangerWriter(),</span>
+<span class="fc" id="L27">        configurationBuilder = builder,</span>
+<span class="fc" id="L28">    ).write()</span>
+<span class="fc" id="L29">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
