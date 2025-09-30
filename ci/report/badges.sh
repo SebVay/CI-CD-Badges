@@ -5,6 +5,7 @@ set -o pipefail
 # debug log
 set -x
 
+source config.sh
 source helper/functions.sh
 
 COLOR_COVERAGE_PERFECT="#0EA5E9"
@@ -23,7 +24,6 @@ COLOR_DELTA_NEUTRAL="#BCBCBC"
 # Arguments:
 #   $1: The name of the module to generate the badges for.
 generateBadges() {
-  local currentCoverage lastCoverage delta
   local path=$1
 
   generateDeltaBadges "$path"
@@ -81,7 +81,7 @@ generateDeltaBadges() {
     lastCoverage=$(metric "$path" coverage -2)
     delta=$(calculateDelta "$currentCoverage" "$lastCoverage")
 
-    generateDeltaBadge "$pathBadge" "deltaLastCommitCoverage" "$delta"
+    generateDeltaBadge "$pathBadge" "$LAST_COMMIT_DELTA_BADGE_JSON" "$delta"
   fi
 
   if [ "$csvSize" -gt 11 ]; then
@@ -89,7 +89,23 @@ generateDeltaBadges() {
     lastCoverage=$(metric "$path" coverage -11)
     delta=$(calculateDelta "$currentCoverage" "$lastCoverage")
 
-    generateDeltaBadge "$pathBadge" "deltaLastTenCommitCoverage" "$delta"
+    generateDeltaBadge "$pathBadge" "$LAST_10_COMMITS_DELTA_BADGE_JSON" "$delta"
+  fi
+
+  if [ "$csvSize" -gt 26 ]; then
+    currentCoverage=$(metric "$path" coverage)
+    lastCoverage=$(metric "$path" coverage -26)
+    delta=$(calculateDelta "$currentCoverage" "$lastCoverage")
+
+    generateDeltaBadge "$pathBadge" "$LAST_25_COMMITS_DELTA_BADGE_JSON" "$delta"
+  fi
+
+  if [ "$csvSize" -gt 51 ]; then
+    currentCoverage=$(metric "$path" coverage)
+    lastCoverage=$(metric "$path" coverage -51)
+    delta=$(calculateDelta "$currentCoverage" "$lastCoverage")
+
+    generateDeltaBadge "$pathBadge" "$LAST_50_COMMITS_DELTA_BADGE_JSON" "$delta"
   fi
 }
 
@@ -114,12 +130,11 @@ generateDeltaBadge() {
   elif is "$delta" ">=" 2; then color=$COLOR_COVERAGE_VERY_GOOD
   elif is "$delta" ">=" 1; then color=$COLOR_COVERAGE_GOOD
   elif is "$delta" ">=" 0; then color=$COLOR_DELTA_NEUTRAL
-  elif is "$delta" ">" -1; then color=$COLOR_COLOR_COVERAGE_BELOW_AVG
+  elif is "$delta" ">" -1; then color=$COLOR_COVERAGE_BELOW_AVG
   elif is "$delta" ">" -2; then color=$COLOR_COVERAGE_POOR
-  elif is "$delta" ">" -5; then color=$COLOR_COVERAGE_VERY_BAD
-  else color=$COLOR_COVERAGE_TERRIBLE; fi
+  else color=$COLOR_COVERAGE_BAD; fi
 
-  cat <<EOF > "$1/$2.json"
+  cat <<EOF > "$1/$2"
 {
   "schemaVersion": 1,
   "label": "Δ",

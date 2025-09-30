@@ -5,6 +5,9 @@ set -o pipefail
 # debug log
 set -x
 
+source config.sh
+source helper/functions.sh
+
 generateHtmlPage() {
   local project=$1
   shift
@@ -12,19 +15,22 @@ generateHtmlPage() {
   local table_rows=""
 
   for module in "${modules[@]}"; do
-    local badgeUrl="https://raw.githubusercontent.com/SebVay/CI-CD-Badges/refs/heads/main/$project/$module/badges/coverage.json"
-    local coverageBadgeUrl="https://img.shields.io/endpoint?url=$badgeUrl"
-    local jacocoUrl="https://sebvay.github.io/CI-CD-Badges/$project/$module/jacoco/test/html"
+    local jsonBadgeUrl="$GITHUB_RAW_REPOSITORY_URL/refs/heads/main/$project/$module/badges/$COVERAGE_BADGE_JSON"
+    local coverageBadgeUrl="https://img.shields.io/endpoint?url=$jsonBadgeUrl"
+    local jacocoUrl="$GITHUB_PAGE_URL/$project/$module/jacoco/test/html"
     local htmlImgTag="<a href=\"$jacocoUrl\"><img src=\"$coverageBadgeUrl\" alt=\"Coverage Badge\"/></a>"
 
-    table_rows+="<tr><td>$module</td><td>$htmlImgTag</td></tr>"
+    table_rows+="<tr><td><a href=\"$GITHUB_REPOSITORY_URL/tree/main/$project/$module\">$module</a></td><td>$htmlImgTag</td></tr>"
   done
 
-  local totalBadgeUrl="https://raw.githubusercontent.com/SebVay/CI-CD-Badges/refs/heads/main/$project/badges/coverage.json"
-  local totalCoverageBadgeUrl="https://img.shields.io/endpoint?url=$totalBadgeUrl"
-  local totalHtmlImgTag="<img src=\"$totalCoverageBadgeUrl\" alt=\"Total Project Coverage\"/>"
+  local jsonTotalBadgeUrl="$GITHUB_RAW_REPOSITORY_URL/refs/heads/main/$project/badges/$COVERAGE_BADGE_JSON"
+  local shieldIoTotalBadgeUrl="https://img.shields.io/endpoint?url=$jsonTotalBadgeUrl"
+  local totalHtmlImgTag="<img src=\"$shieldIoTotalBadgeUrl\" alt=\"Total Project Coverage\"/>"
 
-  local lastCommitImgTag="<img src=\"https://img.shields.io/badge/last%20commit%20coverage-pending-9ca3af\" alt=\"Since last commit coverage delta\" />"
+  lastCommit=$(generateContentForBadge "$LAST_COMMIT_DELTA_BADGE_JSON" "$project" 1)
+  last10Commits=$(generateContentForBadge "$LAST_10_COMMITS_DELTA_BADGE_JSON" "$project" 10)
+  last25Commits=$(generateContentForBadge "$LAST_25_COMMITS_DELTA_BADGE_JSON" "$project" 25)
+  last50Commits=$(generateContentForBadge "$LAST_50_COMMITS_DELTA_BADGE_JSON" "$project" 50)
 
   cat <<EOF > "$project/index.html"
 <!DOCTYPE html>
@@ -183,34 +189,52 @@ generateHtmlPage() {
       <!-- Trends / Delta sections  -->
       <div class="delta-sections">
         <div class="delta-card">
-          <h4>Since last commit</h4>
+          <h4>Delta from last commit</h4>
           <div class="delta-badges">
-            $lastCommitImgTag
+            $lastCommit
           </div>
         </div>
         <div class="delta-card">
-          <h4>Since last 5 commits</h4>
+          <h4>Delta from last 10 commits</h4>
           <div class="delta-badges">
-            <img src="https://img.shields.io/badge/coverage%20delta-pending-9ca3af" alt="Since last 5 commits coverage delta" />
+            $last10Commits
           </div>
         </div>
         <div class="delta-card">
-          <h4>Since last week</h4>
+          <h4>Delta from last 25 commits</h4>
           <div class="delta-badges">
-            <img src="https://img.shields.io/badge/coverage%20delta-pending-9ca3af" alt="Since last week coverage delta" />
+            $last25Commits
           </div>
         </div>
         <div class="delta-card">
-          <h4>Since last month</h4>
+          <h4>Delta from last 50 commits</h4>
           <div class="delta-badges">
-            <img src="https://img.shields.io/badge/coverage%20delta-pending-9ca3af" alt="Since last month coverage delta" />
+            $last50Commits
           </div>
         </div>
       </div>
       <div class="section-separator" aria-hidden="true"></div>
-      <div class="footer">Built with a few simple scripts (Bash + JaCoCo + shields.io).<br> If you'd like the snippets that generate this page and the badges, drop me a line at <a href="mailto:sebast.mar@gmail.com">sebast.mar@gmail.com</a>.</div>
+      <div class="footer">Built with a few simple scripts (Bash + JaCoCo + shields.io).<br> If you'd like the integration to be shared, drop me a line at <a href="mailto:sebast.mar@gmail.com">sebast.mar@gmail.com</a> for any help.</div>
     </div>
   </body>
 </html>
 EOF
+}
+
+generateContentForBadge() {
+  jsonBadge=$1
+  project=$2
+  metricIndex=$((-$3 - 1))
+
+  sha=$(metric "$project" sha $metricIndex)
+
+  if [ -f "$project/badges/$jsonBadge" ]; then
+    local commitUrl="$GITHUB_REPOSITORY_URL/commit/$sha"
+    local jsonUrl="$GITHUB_RAW_REPOSITORY_URL/refs/heads/main/$project/badges/$jsonBadge"
+    local shieldIoBadge="https://img.shields.io/endpoint?url=$jsonUrl"
+    local imgTag="<a href=\"$commitUrl\"><img src=\"$shieldIoBadge\" alt=\"Since last commit coverage delta\" /></a>"
+    echo "$imgTag"
+  else
+    echo "N/A"
+  fi
 }
