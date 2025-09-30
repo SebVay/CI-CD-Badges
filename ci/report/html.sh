@@ -229,7 +229,7 @@ generateContentForBadge() {
   sha=$(metric "$project" sha $metricIndex)
 
   if [ -f "$project/badges/$jsonBadge" ]; then
-    local commitUrl="$GITHUB_REPOSITORY_URL/commit/$sha"
+    local commitUrl="$GITHUB_PAGE_URL/$project/commit/$sha"
     local jsonUrl="$GITHUB_RAW_REPOSITORY_URL/refs/heads/main/$project/badges/$jsonBadge"
     local shieldIoBadge="https://img.shields.io/endpoint?url=$jsonUrl"
     local imgTag="<a href=\"$commitUrl\"><img src=\"$shieldIoBadge\" alt=\"Since last commit coverage delta\" /></a>"
