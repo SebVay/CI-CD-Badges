@@ -7,6 +7,7 @@ cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source clean/remove_outdated_files.sh
 source metrics/metrics.sh
 source report/badges.sh
+source report/jacoco.sh
 source report/html.sh
 
 project=$1
@@ -17,6 +18,7 @@ modules=("$@")
 cd ..
 
 removeOutdatedFiles "$project" "${modules[@]}"
+generateJacocoReport "$project" "${modules[@]}"
 generateMetrics "$project" "${modules[@]}"
 generateBadgesForModulesAndProject "$project" "${modules[@]}"
 generateHtmlPage "$project" "${modules[@]}"
