@@ -215,7 +215,7 @@ generateHtmlPage() {
       </div>
       <div class="section-separator" aria-hidden="true"></div>
       <div class="footer">
-        Built with a few simple scripts (Bash + JaCoCo + shields.io) by [this project](https://github.com/SebVay/CI-CD-Badges).<br>
+        Built with a few simple scripts (Bash + JaCoCo + shields.io) by <a href="https://github.com/SebVay/CI-CD-Badges">this project</a>.<br>
         If you'd like the integration to be shared or need any help with it, drop me a line at <a href="mailto:sebast.mar@gmail.com">sebast.mar@gmail.com</a>.
       </div>
     </div>

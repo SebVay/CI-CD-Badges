@@ -128,8 +128,8 @@ generateDeltaBadge() {
 
   if is "$delta" ">=" 5; then color=$COLOR_COVERAGE_EXCELLENT
   elif is "$delta" ">=" 2; then color=$COLOR_COVERAGE_VERY_GOOD
-  elif is "$delta" ">=" 1; then color=$COLOR_COVERAGE_GOOD
-  elif is "$delta" ">=" 0; then color=$COLOR_DELTA_NEUTRAL
+  elif is "$delta" ">" 0; then color=$COLOR_COVERAGE_GOOD
+  elif is "$delta" "==" 0; then color=$COLOR_DELTA_NEUTRAL
   elif is "$delta" ">" -1; then color=$COLOR_COVERAGE_BELOW_AVG
   elif is "$delta" ">" -2; then color=$COLOR_COVERAGE_POOR
   else color=$COLOR_COVERAGE_BAD; fi
