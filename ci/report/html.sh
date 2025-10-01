@@ -49,7 +49,7 @@ generateHtmlPage() {
         --accent: #22c55e;      /* green-500 */
         --accent-2: #16a34a;    /* green-600 */
         --border: #1f2937;      /* gray-800 */
-        --headerRow: #0b1220;         /* alt headerRow */
+        --headerRow: #0b1220;   /* alt headerRow */
       }
       * { box-sizing: border-box; }
       body {
@@ -214,7 +214,10 @@ generateHtmlPage() {
         </div>
       </div>
       <div class="section-separator" aria-hidden="true"></div>
-      <div class="footer">Built with a few simple scripts (Bash + JaCoCo + shields.io).<br> If you'd like the integration to be shared, drop me a line at <a href="mailto:sebast.mar@gmail.com">sebast.mar@gmail.com</a> for any help.</div>
+      <div class="footer">
+        Built with a few simple scripts (Bash + JaCoCo + shields.io) by [this project](https://github.com/SebVay/CI-CD-Badges).<br>
+        If you'd like the integration to be shared or need any help with it, drop me a line at <a href="mailto:sebast.mar@gmail.com">sebast.mar@gmail.com</a>.
+      </div>
     </div>
   </body>
 </html>
